@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera";
+import {analyzeImage} from "@/lib/api/AnalyzePhoto";
 
 const CameraComponent: React.FC = () => {
     const cameraRef = useRef<Camera>(null);
@@ -21,10 +22,10 @@ const CameraComponent: React.FC = () => {
             return;
         }
         try {
-            const photo = await cameraRef.current.takePhoto({
-                qualityPrioritization: "balanced",
-            });
-            console.log("Photo taken:", photo);
+            const photo = await cameraRef.current.takePhoto();
+            console.log("Photo file:", photo);
+
+            console.log("Result: " + await analyzeImage(photo));
             // Handle the photo result as needed
         } catch (error) {
             console.error("Error taking photo:", error);
