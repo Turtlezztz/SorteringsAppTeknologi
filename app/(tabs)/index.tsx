@@ -1,21 +1,20 @@
-import {Image, StyleSheet, Text, Platform, Animated, View, Button} from 'react-native';
+import {StyleSheet, Text, Animated, View} from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import ScrollView = Animated.ScrollView;
-import {rgbaColor} from "react-native-reanimated/lib/typescript/Colors";
-import ImagePicker from "react-native-image-picker"
-import {MEDIA_TYPES} from "expo-asset/plugin/build/utils";
 import {Camera, useCameraDevice, useCameraPermission} from "react-native-vision-camera";
+import CamaraView from "@/components/CamaraView";
 
 
 export default function HomeScreen() {
     const { hasPermission, requestPermission } = useCameraPermission()
     const device = useCameraDevice('back')
 
-    requestPermission()
+    if(!hasPermission) {
+        requestPermission()
+    }
+    console.log(device);
+    console.log(hasPermission)
+
     return (
         <ScrollView>
             <Text style={{
@@ -25,20 +24,7 @@ export default function HomeScreen() {
             }}>
               Velkommen tilbage!
             </Text>
-            <View>
-                ({(hasPermission && device) ? (
-                            <Camera
-                              style={StyleSheet.absoluteFill}
-                              device={device}
-                              isActive={true}
-                            />
-                ) : (
-                    <Text>
-                        Det er en kold verden
-                    </Text>
-                )
-                })
-            </View>
+            <CamaraView />
         </ScrollView>
 
 );
