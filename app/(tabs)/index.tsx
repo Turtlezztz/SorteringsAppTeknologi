@@ -8,11 +8,12 @@ import ScrollView = Animated.ScrollView;
 import {rgbaColor} from "react-native-reanimated/lib/typescript/Colors";
 import ImagePicker from "react-native-image-picker"
 import {MEDIA_TYPES} from "expo-asset/plugin/build/utils";
-import {useCameraPermission} from "react-native-vision-camera";
+import {Camera, useCameraDevice, useCameraPermission} from "react-native-vision-camera";
 
 
 export default function HomeScreen() {
     const { hasPermission, requestPermission } = useCameraPermission()
+    const device = useCameraDevice('back')
 
     requestPermission()
     return (
@@ -25,10 +26,18 @@ export default function HomeScreen() {
               Velkommen tilbage!
             </Text>
             <View>
-                {hasPermission ? (
-
-                ) : Element => {return <View></View>} :
-                }
+                ({(hasPermission && device) ? (
+                            <Camera
+                              style={StyleSheet.absoluteFill}
+                              device={device}
+                              isActive={true}
+                            />
+                ) : (
+                    <Text>
+                        Det er en kold verden
+                    </Text>
+                )
+                })
             </View>
         </ScrollView>
 
