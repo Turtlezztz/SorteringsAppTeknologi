@@ -1,35 +1,32 @@
 import { PhotoFile } from "react-native-vision-camera";
 
 export async function analyzeImage(photoFile: PhotoFile): Promise<any> {
-    console.log("1")
-    const response =  await fetch("file://" + photoFile.path);
-    console.log("2")
-
-    const fileData = await response.blob();
-    console.log("Blob received:", fileData);
-
-    const file = new File([fileData], "image.jpg", { type: fileData.type || "image/jpeg" });
-    console.log("File created:", file);
-
-    const formData = new FormData();
-    formData.append("image", file);
-    console.log("FormData prepared.");
-
-    console.log(formData)
-
     try {
-        console.log("Starting fetch...");
-        const response = await fetch('https://12tal.mintmc.dk/analyze', {
+        const response = await fetch("file://" + photoFile.path);
+        const blob = await response.blob();
+        const base64 = await convertBlobToBase64(blob);
+
+        const sortResponse = await fetch('http://192.168.5.126:3000/analyze', {
             method: 'POST',
-            body: formData,
+            body: base64,
+            headers: {
+                'Content-Type': 'text/plain',
+            },
         });
-        console.log("Fetch response:", response);
 
-        const data = await response.json();
-        console.log("Response JSON:", data);
+        const data = await sortResponse.json();
+        return data.group;
     } catch (error) {
-        console.error("Fetch error:", error);
+        console.error("Error reading image:", error);
+        throw error;
     }
+}
 
-
+function convertBlobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
 }
